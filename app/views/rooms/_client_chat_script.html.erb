@@ -1,0 +1,120 @@
+<script>
+
+  var thanks = [
+    "Awesome! Thank you for choosing Kriya. I am now matching your job with one of our many freelancers who will be reaching out to you shortly. Consider that your work is done! </br></br>In the meantime, can you please help me get to know you better?",
+    {
+      type: 'blank',
+      path: 'website'
+    }
+  ]
+
+  var noProblem = [
+    'Alright, no problem',
+    {
+      type: 'blank',
+      path: 'reachingShortly'
+    }
+  ]
+
+  var reachingShortly = [
+    'Thank you for answering my questions. I assigned this task to the matching freelancers. They will be here shortly.',
+    {
+      type: 'blank',
+      path: 'note'
+    }
+  ]
+
+  var note = [
+    'Please allow 6 to 12 hrs delay in response if you created this after 10am PST.'
+  ]
+
+
+  var website = [
+    'Please provide your company website',
+    {
+      type: 'submitAnswer',
+      submitUrl: '/tasks/<%= @room.id %>',
+      htmlClass: 'website',
+      path: 'employeeCount',
+      key: 'website'
+    }
+  ]
+
+  var employeeCount = [
+    'Great! And how many employees are you?',
+    {
+      type: 'submitAnswer',
+      submitUrl: '/tasks/<%= @room.id %>',
+      htmlClass: 'employee-count',
+      path: 'slack',
+      key: 'total_employee'
+    }
+  ]
+
+  var slack = [
+    'Thanks for that. One last question. Do you use Slack? Please click yes if you do as we deeply integrate with Slack to increase your productivity and communicate easily with the Kriya workforce.',
+    {
+      type: 'visit',
+      answers: [
+        {
+          'text': 'Add Slack',
+          'path': "<%== escape_javascript slack_integration_url =%>"
+        },
+        {
+          'text': 'Pass',
+          'path': '/tasks/<%= @room.id %>/deny_slack'
+        }
+      ]
+    }
+  ]
+
+  var configs = {
+    greeting: thanks,
+    website: website,
+    employeeCount: employeeCount,
+    slack: slack,
+    noProblem: noProblem,
+    reachingShortly: reachingShortly,
+    note: note
+  }
+
+  <% if @room.website? %>
+    var configs = {
+      greeting: employeeCount,
+      employeeCount: employeeCount,
+      slack: slack,
+      noProblem: noProblem,
+      reachingShortly: reachingShortly,
+      note: note
+    }
+  <% end %>
+
+  <% if @room.total_employee? %>
+    var configs = {
+      greeting: slack,
+      slack: slack,
+      noProblem: noProblem,
+      reachingShortly: reachingShortly,
+      note: note
+    }
+  <% end %>
+
+  <% slack_channel = @room.slack_channels.find_by(user: user) %>
+
+  <% if slack_channel.present? && slack_channel.inactive? %>
+    var configs = {
+      greeting: slack,
+      slack: slack,
+      noProblem: noProblem,
+      reachingShortly: reachingShortly,
+      note: note
+    }
+  <% end %>
+
+  new Chat(
+    configs,
+    {
+      targetNode: '#chat'
+    }
+  );
+</script>

@@ -1,0 +1,18 @@
+.sidebar.sidebar--left
+  .ui.secondary.vertical.pointing.menu.fluid
+    = link_to "Home", root_path, class: "item"
+    - @joined_goomps.each do |goomp|
+      = link_to goomp, class: "item" do
+        / = image_tag goomp.logo if goomp.logo
+        = goomp.name
+
+    = link_to 'Explore Goomps', goomps_path, class: 'item primary active'
+
+.main
+  .twelve.wide.column
+    h2 Goomps
+    .ui.divider
+    .ui.cards
+      = render @goomps
+    .ui.centered.grid
+      .column

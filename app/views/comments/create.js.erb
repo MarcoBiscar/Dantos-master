@@ -1,0 +1,2 @@
+$("#<%= dom_id(@comment.post) %> .comment:last").before("<%= j render partial: 'comments/comment', locals: { comment: @comment } %>")
+$("#<%= dom_id(@comment.post) %> form").trigger("reset")

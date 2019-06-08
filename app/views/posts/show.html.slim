@@ -1,0 +1,25 @@
+= content_tag :div, id: dom_id(@post) do
+  .ui.container.new-post
+    .author-box-show
+      .left
+        = image_tag @post.user.profile_picture, class: 'ui image mini'
+      .right
+        .summary
+          = link_to @post.user.full_name, @post.user, class: "user"
+        span.date
+          = time_ago_in_words @post.created_at
+          '  ago
+      .right[style="float:right"]
+        - if current_user == @post.user
+          .right.menu
+            .item
+              = link_to 'Edit', edit_post_path(@post), :data => {:modal => true}, :class => 'ui button basic blue'
+
+    h1 = @post.title
+
+    = @post.content.html_safe
+
+    / = @post.comments_count
+    / = @post.subtopic
+    .cf
+    .ui.divider

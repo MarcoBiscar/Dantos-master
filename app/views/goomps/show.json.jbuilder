@@ -1,0 +1,1 @@
+json.partial! "goomps/goomp", goomp: @goomp

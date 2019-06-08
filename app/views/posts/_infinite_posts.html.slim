@@ -1,0 +1,4 @@
+.js-infinite
+  .js-infinite--list
+    = render partial: "posts/post", collection: posts, cached: false
+  .js-infinite--pagination = link_to_next_page posts, 'Next Page', remote: true

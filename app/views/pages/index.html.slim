@@ -1,0 +1,214 @@
+css:
+  #network_link, #blog_link {
+    padding: 13px;
+    color: rgba(255, 255, 255, .7) !important;
+    font-weight: bold;
+  }
+
+  #network_link:hover, #blog_link:hover {
+    color: white;
+    background: rgba(255, 255, 255, .08);
+    border-radius: .28571429rem;
+  }
+
+  #world_image {
+    max-width: 50%;
+    padding-bottom: 1rem;
+    margin: auto;
+  }
+
+  #launch {
+    padding-top: 1rem;
+  }
+
+  #launch.ui.small.sequenced.images .ui.image {
+    background: gray;
+  }
+
+  .nine.wide.column.p {
+    text-align: center;
+  }
+
+  .nine.wide.column{
+    text-align: center;
+  }
+
+  .ui.image {
+    margin: auto;
+  }
+
+#example.index
+  .following.bar
+    .ui.container
+      .ui.large.secondary.network.menu.inverted
+        .right.menu.inverted
+          - if user_signed_in?
+            = link_to 'Sign Out', destroy_user_session_path, method: :delete, class: "item"
+          br
+          - unless user_signed_in? && freelancer_signed_in?
+            = link_to 'Blog', 'https://blog.kriya.ai', target: '_blank', id: 'blog_link'
+            = link_to 'FAQ', 'https://blog.kriya.ai/ten-things-you-should-know-about-kriya-ai-478e130d1b3e#.7syrzm2ue', target: '_blank', id: 'blog_link'
+            = link_to 'Sign Up As Talent', 'https://kriya.ai/network', id: 'blog_link', :class => 'ui big inverted basic button'
+
+  .masthead.segment.bg7
+    .ui.container
+      .introduction
+        span.library = link_to (image_tag "logo-invert.png", style: "height: 75px", alt: "Kriya AI"), 'https://kriya.ai'
+        div.ui.inverted.header
+          h2.tagline Your Instant Workforce
+          span.tagline Extend your team by connecting with our A.I. vetted workforce in 30 minutes
+        = render "goomp_bot/new_user"
+        .ui.hidden.divider
+
+  .feature.alternate.ui.stripe.vertical.segment
+    .ui.three.column.center.aligned.divided.relaxed.stackable.grid.container
+      .row
+        .column
+          h2.ui.icon.header
+            .ui.small.sequenced.images
+              img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1485289084/pasted-image_jvtmmx.png"]
+            |  Quality Vetted by A.I
+          p
+            | Our A. I. systems vet the quality of the talent before you connect with them. What does it even mean? You don't have to interview them. They are ready to work.
+            a[href="https://medium.com/@raviformative/minimum-viable-product-mvp-for-3000-d5823d302396"]
+              |  Read case study
+        .column
+          h2.ui.icon.header
+            .ui.small.sequenced.images
+              img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_150/v1480711882/chat-bubble-icon-95116_npqtvr.png"]
+            |  Protected Messaging Platform
+          p
+            | Our in-house legal systems and A.I. bot recruiter ensures that your conversations, files, and IP are fully protected. We deeply integrate with Slack, Email etc.
+
+        .column
+          h2.ui.icon.header
+            .ui.small.sequenced.images
+              img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_200/v1482996444/PZ_20ICON34_faabab.png"]
+            | Money Back Guarantee
+          p
+            | You don't pay anything until you are satisfied with the work delivered by your extended team members. We provide full money back guarantee for our users!
+
+      .ui.divider
+
+  .ui.vertical.stripe.intro.segment
+    .ui.stackable.very.relaxed.center.aligned.grid.container
+      .row
+        .twelve.wide.column
+          #world_image
+            img.ui.fluid.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1480704745/world_xdht8p.png"]
+          h1.ui.header
+            | Our Mission
+          p
+            | Connecting workforce to make work happen
+
+  .ui.stripe.vertical.segment
+    .ui.stackable.very.relaxed.grid.container
+      .fourteen.wide.center.aligned.centered.column
+        h1.ui.icon.header
+          img.ui.icon.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1480718688/growth01_km9rdz.png"]
+          |  Specially Designed For Teams
+        .ui.small.images
+          img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/v1483951718/d8DcXmvNTCGOyPJpJ6cA_l3kcxs.png"]
+          img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1483954427/boostlogo_tkt8ab.png"]
+          img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1483954569/cfb2woUf_cpjfvu.png"]
+          img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1485302632/Organic-Marketing-big_jzr21m.png"]
+          img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1483954714/seatjoy_ysbtxl.png"]
+          img.ui.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1483954934/polygon_i2d1oa.png"]
+        h1#launch
+          | 200+ Projects
+        p
+          | Used Kriya to get their work done!
+          br
+          | Polygon, Delighterr, Liquid through, BoostVC, Organic Marketing, etc.
+          br
+        p
+          a.ui.large.primary.button[href="https://blog.kriya.ai/ten-things-you-should-know-about-kriya-ai-478e130d1b3e"]
+            |  Learn More
+            i.right.chevron.icon
+
+    .ui.stripe.community.vertical.segment
+      .ui.two.column.center.aligned.divided.very.relaxed.stackable.grid.container
+        .row
+          .column
+            h2.ui.icon.header
+              img.ui.icon.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/v1482975771/apps.42617.13510798882781999.e140bd7f-8400-4c22-bdcb-90134e7ddcae_dzelwf.png"]
+              |  Forbes
+            p
+              | "Silicon Valley Startup Drives Down
+              br The Cost & Frustration Of Getting To Beta"
+            a.ui.large.button[href="https://www.forbes.com/sites/moiravetter/2016/12/23/silicon-valley-startup-drives-down-the-cost-frustration-of-getting-to-beta/#259c9db71c23" target="_blank"]
+              | Read Article
+          .column
+            h2.ui.icon.header
+              img.ui.icon.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_500/v1482976125/ph-logo-2_tcoqqa.png"]
+              |  ProductHunt
+            p
+              | "The new concept, combining AI to the workplace."
+            a.ui.large.button[href="https://www.producthunt.com/posts/kriya-ai/" target="_blank"]
+              | Read Article
+
+    .ui.vertical.stripe.quote.segment
+      .ui.equal.width.stackable.internally.celled.grid
+        .center.aligned.row
+          .column
+            h3
+              | "Had a great experience!"
+            p
+              img.ui.avatar.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_150/v1480717131/042e67d_udtu2z.jpg"]
+              b
+                | Michael McAllen
+              br Co-Founder of Grass Shack Events
+          .column
+            h3
+              | "This is the future. Period."
+            p
+              img.ui.avatar.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_150/v1480717825/AAEAAQAAAAAAAAMbAAAAJGJlNWU0MDJkLWJjM2MtNGRiZS1iNGY1LTk1MDAyMGM1NWRkMA_ar6dnh.jpg"]
+              b
+                | Vamsi Thatha
+              br Co-Founder of Polygon Inc
+
+          .column
+            h3
+              | "It's delightful!"
+            p
+              img.ui.avatar.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/c_scale,w_150/v1480718077/0a0c8df_xp4grk.jpg"]
+              b
+                | Baker Nanduru
+              br Founder & CEO of Delighterr
+
+  .ui.alternate.stripe.vertical.segment
+    .ui.stackable.center.aligned.grid.container
+      .fourteen.wide.column
+        h1.ui.icon.header
+          img.ui.inline.icon.image[src="https://res.cloudinary.com/dyhdmrsdc/image/upload/v1478722548/kriya-logo-black_hmavml.png"]
+          |  We bring you the future of work!
+        .ui.stackable.center.aligned.vertically.padded.grid
+          .eight.wide.column
+            h3.ui.header
+              | Our Vision
+            p
+            a.ui.large.right.labeled.green.icon.button[href="#example"]
+              i.right.chevron.icon
+              |  Create Your First Task
+
+  .ui.black.inverted.vertical.footer.segment
+    .ui.center.aligned.container
+      .ui.stackable.inverted.grid
+        .column
+          .ui.inverted.link.list
+            a.item
+              span.library = image_tag "logo-invert.png", style: "height: 60px", alt: "Kriya AI"
+          h4.ui.inverted.header
+            .ui.inverted.link.list
+              a.item[href="mailto:submissions@kriya.ai" target="_blank"]
+                | Email Us
+              a.item[href="https://facebook.com/kriyaai" target="_blank"]
+                | Facebook
+              a.item[href="https://twitter.com/kriyaai" target="_blank"]
+                | Twitter
+              a.item
+                | Kriya Inc Copyright 2016.
+
+
+  script
+    |  !function() { var t; if (t = window.driftt = window.drift = window.driftt || [], !t.init) return t.invoked ? void (window.console && console.error && console.error("Drift snippet included twice.")) : (t.invoked = !0, t.methods = [ "identify", "config", "track", "reset", "debug", "show", "ping", "page", "hide", "off", "on" ], t.factory = function(e) { return function() { var n; return n = Array.prototype.slice.call(arguments), n.unshift(e), t.push(n), t; }; }, t.methods.forEach(function(e) { t[e] = t.factory(e); }), t.load = function(t) { var e, n, o, i; e = 3e5, i = Math.ceil(new Date() / e) * e, o = document.createElement("script"), o.type = "text/javascript", o.async = !0, o.crossorigin = "anonymous", o.src = "https://js.driftt.com/include/" + i + "/" + t + ".js", n = document.getElementsByTagName("script")[0], n.parentNode.insertBefore(o, n); }); }(); drift.SNIPPET_VERSION = '0.3.1'; drift.load('m9zwra75vueg');

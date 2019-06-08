@@ -1,0 +1,169 @@
+<%- new_user ||= false %>
+<script>
+
+  var sign_up = [
+    'Please choose your sign up mode',
+    {
+      type: 'visit',
+      answers: [{
+        'text': 'Twitter',
+        'path': '/auth/twitter?user=freelancer'
+      },{
+        'text': 'Facebook',
+        'path': '/auth/facebook?user=freelancer'
+      },{
+        'text': 'LinkedIn',
+        'path': '/auth/linkedin?user=freelancer'
+      },{
+        'text': 'Email',
+        'path': '/freelancers/sign_up'
+      }]
+    }
+  ];
+  var login = [
+    'Cool, please login or sign up to get to your projects',
+    {
+      type: 'visit',
+      answers: [{
+        'text': 'Twitter',
+        'path': '/auth/twitter?user=freelancer'
+      },{
+        'text': 'Facebook',
+        'path': '/auth/facebook?user=freelancer'
+      },{
+        'text': 'LinkedIn',
+        'path': '/auth/linkedin?user=freelancer'
+      },{
+        'text': 'Email',
+        'path': '/freelancers/sign_in'
+      }]
+    }
+  ];
+
+  var description = [
+    '<%= freelancer_after_sign_up_greeting  %>',
+    {
+      type: 'choose',
+      answers: [{
+        'text': 'Sounds Good!',
+        'path': 'accept_kriya_policy'
+      }]
+    }
+  ];
+
+  var accept_kriya_policy = [
+    '',
+    {
+      type: 'acceptPolicy',
+      key: 'submit-dummy',
+      path: 'freelancer_greeting'
+    }
+  ];
+
+  var freelancer_greeting = [
+    'Welcome to Kriya. We are glad you are here. We will notify you as soon as there\'s a gig matching your profile. Keep watching this space'
+  ];
+
+  var slack = [
+    'Thanks for that. One last question. Do you use Slack? Please click yes if you do as we deeply integrate with Slack to increase your productivity and communicate easily with the Kriya workforce.',
+    {
+      type: 'visit',
+      answers: [
+        {
+          'text': 'Add To Slack',
+          'path': "<%== escape_javascript slack_integration_url =%>"
+        },
+        {
+          'text': 'No',
+          'path': '/freelancers/deny_slack'
+        }
+      ]
+    }
+  ];
+
+  <%- if new_user %>
+    var configs = {
+      greeting: [
+        'Hi, I am Kriya Bot. Welcome! Please sign up for Kriya network and start earning from side hustling',
+        {
+          type: 'choose',
+          answers: [
+            {
+              'text': 'Sign Up',
+              'path': 'signup'
+            },
+            {
+              'text': 'Sign In',
+              'path': 'login'
+            }
+          ]
+        }
+      ],
+      login: login,
+      signup: sign_up
+    };
+  <%- else %>
+    <%- if current_freelancer.pending_rooms.any? && !@room.blank? && @room.posts.present? %>
+      <%- if @room.in_progress_freelancers.blank? %>
+        var description = [
+          'You are now assigned to the following task. <br> <%= @room.posts.first.content.gsub("'", %q(\\\')).split.join(' ').html_safe %> <br> Please note that the budget is only an estimate and you can negotiate. Are you available?',
+          {
+            type: 'visit',
+            path: 'notice',
+            key: "description",
+            answers: [{
+              'text': 'Accept',
+              'path': '/tasks/<%= @room.id %>/accept' ,
+              'key': 'quality'
+            },{
+              'text': 'No',
+              'path': '/tasks/<%= @room.id %>/reject' ,
+              'key': 'quality'
+            }]
+          }
+        ];
+      <%- else %>
+        var description = [
+          "Sorry the task has already been assigned to someone else as they claimed it first."
+        ];
+      <%- end %>
+      var configs = {
+        greeting: description
+      };
+    <%- else %>
+      <%- if current_freelancer.accepted_kriya_policy? %>
+        <%- slack_channel = current_freelancer.slack_channels.find_by(room_id: nil) %>
+        <%- if slack_channel.present? %>
+          var configs = {
+            greeting: [
+              'Welcome to Kriya. We are glad you are here. We will notify you as soon as there\'s a gig matching your profile. Keep watching this space'
+            ]
+          }
+        <%- else %>
+          var configs = {
+            greeting: freelancer_greeting
+          };
+        <%- end %>
+      <%- else %>
+        <%- if current_freelancer.gig_slack_channel.nil? || current_freelancer.gig_slack_channel.inactive? %>
+          var configs = {
+            greeting: description,
+            accept_kriya_policy: accept_kriya_policy,
+            freelancer_greeting: freelancer_greeting
+          };
+        <%- else %>
+          var configs = {
+            greeting: description
+          };
+        <%- end %>
+      <%- end %>
+    <%- end %>
+  <%- end %>
+
+  new Chat(
+    configs,
+    {
+      targetNode: '#chat'
+    }
+  );
+</script>

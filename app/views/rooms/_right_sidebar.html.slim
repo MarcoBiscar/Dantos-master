@@ -1,0 +1,44 @@
+.ui.dividing.right.rail
+  .ui.sticky.fixed.top
+    - if @room.blank?
+      = render "rooms/bot_section"
+    - else
+      #freelancers_section
+        = render "rooms/user_section", room: @room
+      - if @room.posts.first
+        .ui.relaxed.divided.items
+          = link_to post_path(@room.posts.first), :data => {:modal => true}, :style => 'color: rgba(0, 0, 0, 0.87);' do
+            .ui.ignored.info.attached.message[style="width:100%"]
+              p= Sanitize.fragment(truncate(@room.posts.first.title.strip, :length => 50, :escape => false), Sanitize::Config::RELAXED).html_safe
+            .ui.ignored.bottom.attached.warning.message[style="width:100%"]
+              p= Sanitize.fragment(truncate(@room.posts.first.content.strip, :length => 50, :escape => false), Sanitize::Config::RELAXED).html_safe
+
+      - if @room.persisted?
+        .ui.divider
+        .ui.relaxed.divided.items
+          h4
+            | Budget
+          span
+            = number_to_currency(@room.client_budget)
+          span
+            |  (after fees)
+        .ui.divider
+        .ui.relaxed.divided.items
+          h4
+            | Timeline
+          = @room.timeline
+
+      - if user_signed_in? && current_user.client? && @room.new_record?
+        = render "rooms/bot_section"
+      - if user_signed_in? && @room.persisted?
+        - slack_channel = current_user.slack_channels.find_by(room: @room)
+        - if current_user.manager? || @room.finished?
+          .ui.divider
+          .ui.relaxed.divided.items
+            = slack_integration_html
+      - if freelancer_signed_in? && @room.persisted?
+        .ui.divider
+        .ui.relaxed.divided.items
+          - slack_channel = current_freelancer.slack_channels.find_by(room: @room)
+          - if slack_channel.nil? || slack_channel.inactive?
+            = slack_integration_html

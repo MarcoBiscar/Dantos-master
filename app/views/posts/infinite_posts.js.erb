@@ -1,0 +1,11 @@
+  console.log("here-1")
+
+$("<%=j render partial: 'posts/post', collection: @posts, cached: false %>").
+  appendTo($(".js-infinite .js-infinite--list"))
+
+// Update pagination link
+<% if @posts.last_page? %>
+  $('.js-infinite .js-infinite--pagination').html("That's all, folks!");
+<% else %>
+  $('.js-infinite .js-infinite--pagination').html("<%=j link_to_next_page(@posts, 'Next Page', remote: true) %>");
+<% end %>

@@ -1,0 +1,12 @@
+p#notice = notice
+
+p
+  strong Goomp:
+  = @membership.goomp
+p
+  strong User:
+  = @membership.user
+
+= link_to 'Edit', edit_membership_path(@membership)
+'|
+= link_to 'Back', memberships_path

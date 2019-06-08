@@ -1,0 +1,23 @@
+h1 Listing subtopics
+
+table
+  thead
+    tr
+      th Name
+      th Goomp
+      th
+      th
+      th
+
+  tbody
+    - @subtopics.each do |subtopic|
+      tr
+        td = subtopic.name
+        td = subtopic.goomp
+        td = link_to 'Show', subtopic
+        td = link_to 'Edit', edit_subtopic_path(subtopic)
+        td = link_to 'Destroy', subtopic, data: { confirm: 'Are you sure?' }, method: :delete
+
+br
+
+= link_to 'New Subtopic', new_subtopic_path

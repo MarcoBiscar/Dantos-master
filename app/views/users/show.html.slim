@@ -1,0 +1,32 @@
+.ui.stackable.grid.container
+  .two.wide.column
+  .fourteen.wide.column
+    .ui.segments
+      .ui.segment
+        .left-box
+          h1 = @user.full_name
+          p.text-gray = @user.headline
+
+          = render 'users/follow_button', followable: @user
+
+          / .socials
+          /   = link_to 'http://facebook.com', rel: 'nofollow', target: '_blank' do
+          /     i.fa.fa-facebook
+
+          /   = link_to 'http://facebook.com', rel: 'nofollow', target: '_blank' do
+          /     i.fa.fa-twitter
+
+          /   = link_to 'http://facebook.com', rel: 'nofollow', target: '_blank' do
+          /     i.fa.fa-linkedin
+
+
+        .right-box.avatar-container
+          img src = @user.profile_picture
+
+      .ui.segment
+        h2 Short Bio
+        = @user.bio
+        h2 Goomps Created
+        .ui.cards = render @user.goomps
+        h2 Goomps Joined
+        .ui.cards = render @user.joined_goomps

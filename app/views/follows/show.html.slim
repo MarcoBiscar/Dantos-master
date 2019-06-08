@@ -1,0 +1,12 @@
+p#notice = notice
+
+p
+  strong User:
+  = @follow.user
+p
+  strong Followable:
+  = @follow.followable
+
+= link_to 'Edit', edit_follow_path(@follow)
+'|
+= link_to 'Back', follows_path

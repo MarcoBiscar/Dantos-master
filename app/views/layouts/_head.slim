@@ -1,0 +1,14 @@
+meta content=("text/html; charset=UTF-8") http-equiv="Content-Type" /
+title Kriya AI - Your Instant Workforce!
+
+= csrf_meta_tags
+/ = display_meta_tags site: 'Goomp', reverse: true
+script src="https://checkout.stripe.com/checkout.js"
+meta name="stripePublishableKey" content=Rails.application.secrets.stripe_key
+meta name="google-site-verification" content="XjJ_4qEKT6UvksZ1DxwW4BO6evXmW8qJi1Y-qFu2DPQ"
+- if action_name == 'public'
+  = render 'layouts/meta_public_post' if @post.present?
+- else
+  = render 'layouts/meta_info'
+= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
+= javascript_include_tag 'application', 'data-turbolinks-track': 'reload'

@@ -1,0 +1,57 @@
+css:
+  .ui.segment.feed.new {
+    position: relative;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 2px 0 rgba(34,36,38,0.15);
+    margin: 1rem 0em;
+    padding: 2em 2em;
+    border-radius: 0.28571429rem;
+    border: 1px solid rgba(34,36,38,0.15);
+    text-align: left;
+  }
+
+  #submit_field {
+    text-align: center;
+  }
+#example.index
+  .masthead.segment.bg7
+    .ui.container
+      .introduction
+        span.library = link_to (image_tag "logo-invert.png", style: "height: 75px", alt: "Kriya AI"), 'https://kriya.ai'
+        div.ui.inverted.header
+          h2.tagline Sign In
+        #new_user.main
+          .ui.segment.feed.new
+            .event
+              .label
+                img src="/favicon.ico"
+              .content
+                .summary Kriya Bot
+                span.date Just Now
+
+            = form_for resource, :as => resource_name, :url => session_path(resource_name), :method => :post, :html => { :class => "ui form" } do |f|
+              - if flash[:alert].present?
+                .ui.form.error
+                  .ui.error.message
+                    p= flash[:alert]
+              .field class="#{toggle_class_name('error', flash[:alert].present?)}"
+                = f.label :email
+                = f.email_field :email, :autofocus => true
+
+              .field class="#{toggle_class_name('error', flash[:alert].present?)}"
+                = f.label :password
+                = f.password_field :password, :autocomplete => "off"
+
+              - if devise_mapping.rememberable?
+                .field.ui.checkbox
+                  = f.check_box :remember_me
+                  = f.label :remember_me
+
+              .ui.error.message
+              .field#submit_field
+                = f.submit "Log in", :class => 'ui button primary'
+              .field#submit_field
+                a[href="/users/sign_up" style="font-size:1rem"]
+                  |  Sign Up
+
+            = render "devise/shared/links"

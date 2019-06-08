@@ -1,0 +1,29 @@
+.ui.card.goomp-card
+  - if goomp.cover.present?
+    = link_to image_tag(goomp.mini_cover), goomp, class: "image"
+  .content
+    = link_to goomp.name, goomp, class: "header"
+    .meta
+      span.category
+        '  Created by
+        strong = link_to goomp.user.first_name, goomp.user
+
+    .description
+      p = truncate(goomp.description, length: 100)
+
+    .subscription
+      | Subscription:
+      strong  Monthly
+
+    .meta.ui
+      span.members-count.left.floated
+        i.icon.users
+        ' #{goomp.memberships.size} Members
+
+      - if goomp.rating
+        .right.floated.rating
+          | Ratings
+          span.ui.star.rating data-rating=goomp.rating data-unratable=true
+
+  .extra.content
+    = render "goomps/join_button", goomp: goomp

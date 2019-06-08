@@ -1,0 +1,48 @@
+doctype html
+html
+  head = render "layouts/head"
+  body id="#{css_class_name}"
+    - if user_signed_in?
+      input type="hidden" value="user" id="is_user"
+    - if freelancer_signed_in?
+      input type="hidden" value="freelancer" id="is_user"
+    - unless no_header?
+      .ui.borderless.fixed.menu
+        a.header.item href="/"
+          = image_tag "logo.png", alt: "Kriya", class: "logo ui"
+        - if user_signed_in?
+          .right.menu
+            div class="ui pointing dropdown link item"
+              = image_tag current_user.profile_picture, size: "45x45", class: "ui"
+              i class="dropdown icon"
+              .menu
+                - if current_user.client?
+                  = link_to "Create Project", new_room_path, class: "item new"
+                = link_to "Sign Out", destroy_user_session_path, method: :delete, class: "ui item"
+        - elsif freelancer_signed_in?
+          .right.menu
+            div class="ui pointing dropdown link item"
+              = image_tag current_freelancer.profile_picture, size: "45x45", class: "ui"
+              i class="dropdown icon"
+              .menu
+                = link_to "Sign Out", destroy_freelancer_session_path, method: :delete, class: "ui item"
+
+      = render "layouts/goomp_header"
+
+    .site-container class="#{toggle_class_name('no-header', no_header?)}"
+      #modal-holder
+      = yield
+
+    script
+      |  !function(f,b,e,v,n,t,s) {if(f.fbq)return;n=f.fbq=function(){n.callMethod? n.callMethod.apply(n,arguments):n.queue.push(arguments)}; if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0'; n.queue=[];t=b.createElement(e);t.async=!0; t.src=v;s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s)}(window,document,'script', 'https://connect.facebook.net/en_US/fbevents.js'); fbq('init', '463997730444221'); fbq('track', 'PageView');
+    noscript
+      img[height="1" width="1" src="https://www.facebook.com/tr?id=463997730444221&ev=PageView&noscript= 1 "]
+    script
+      |  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-89701872-1', 'auto'); ga('send', 'pageview');
+
+    javascript:
+      (function(a){
+        window.filepicker = null
+        if(window.filepicker){return}var b=a.createElement("script");b.type="text/javascript";b.async=!0;b.src=("https:"===a.location.protocol?"https:":"http:")+"//api.filestackapi.com/filestack.js";var c=a.getElementsByTagName("script")[0];c.parentNode.insertBefore(b,c);var d={};d._queue=[];var e="pick,pickMultiple,pickAndStore,read,write,writeUrl,export,convert,store,storeUrl,remove,stat,setKey,constructWidget,makeDropPane".split(",");var f=function(a,b){return function(){b.push([a,arguments])}};for(var g=0;g<e.length;g++){d[e[g]]=f(e[g],d._queue)}window.filepicker=d
+        filepicker.setKey('Akt6oZj2YRamLQYtKyrhzz')
+      })(document);

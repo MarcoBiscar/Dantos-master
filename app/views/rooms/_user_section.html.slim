@@ -1,0 +1,52 @@
+- if !current_user.blank? and (current_user.manager? or current_user.client?)
+  - if @room.in_progress_freelancers.any?
+    .ui.relaxed.divided.items#accepted_freelancers
+      .ui.cards
+        - @room.in_progress_freelancers.each do |af|
+          .card
+            .content id="asigned_freelancer_#{af.id}"
+              img.right.floated.tiny.ui.image[src="#{af.profile_picture}"]
+              .header= af.first_name
+              .meta= af.headline
+              p
+                .ui.star.rating.disabled[data-rating="5"]
+            .extra.content
+              .ui.two.buttons
+                /.ui.basic.green.button
+                    | View Profile
+                = link_to 'Remove', remove_asigned_freelancer_room_path(@room, freelancer_id: af.id), data: {remote: true, confirm: "Are you sure?"}, class: 'ui basic red button'
+  - elsif current_user.manager?
+    .ui.divider
+    #assign_freelancers_btn
+      = link_to 'Invite Freelancers', freelancers_list_room_path(@room), class: 'ui button small primary', id: 'asign_freelancer_btn', :data => {:modal => true}
+  - elsif @room && @room.posts.first
+    - post = @room.posts.first
+    - timediff = 30.minutes - ((Time.zone.now - post.created_at) / 30.minutes % 1 * 30.minutes)
+
+    .ui.divider
+    #timer[data-timer="#{timediff}"]
+    .ui.active.centered.inline.text.loader Finding Talent
+- else
+  .ui.relaxed.divided.items#accepted_clients
+    .ui.cards
+      .card
+        .content id="asigned_user_#{@room.user.id}"
+          img.right.floated.tiny.ui.image[src="#{@room.user.profile_picture}"]
+          .header= @room.user.first_name
+          .meta= @room.user.headline
+          p
+            | Ratings:
+            .ui.star.rating.disabled[data-rating="5"]
+
+coffee:
+  $(document).ready ->
+  clock = $('#timer').FlipClock()
+  timer = $('#timer').data('timer')
+  clock.setCountdown(true)
+  clock.setTime(timer)
+
+  countup = setInterval((->
+    if clock.getTime().time <= 0
+      clock.setTime(1800)
+    return
+  ), 500)

@@ -1,0 +1,15 @@
+= form_for @subtopic do |f|
+  - if @subtopic.errors.any?
+    #error_explanation
+      h2 = "#{pluralize(@subtopic.errors.count, "error")} prohibited this subtopic from being saved:"
+      ul
+        - @subtopic.errors.full_messages.each do |message|
+          li = message
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :goomp
+    = f.text_field :goomp
+  .actions = f.submit

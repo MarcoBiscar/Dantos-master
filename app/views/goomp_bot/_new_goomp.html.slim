@@ -1,0 +1,18 @@
+div class="ui segment feed"
+  div class="event"
+    div class="label"
+      img src="/favicon.ico"
+    div class="content"
+      div class="summary" Kriya Bot
+      span class="date" Just Now
+      #chat.ui.form
+      div class="extra text"
+
+- if user_signed_in?
+  = render 'rooms/post_modal'
+  - if @room.blank?
+    = render 'shared/chat_script'
+  - else
+    = render 'rooms/client_chat_script'
+- if freelancer_signed_in?
+  = render 'shared/freelancer_chat_script'

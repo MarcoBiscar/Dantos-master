@@ -1,0 +1,10 @@
+class CreateSubtopics < ActiveRecord::Migration[5.0]
+  def change
+    create_table :subtopics do |t|
+      t.string :name
+      t.belongs_to :goomp, foreign_key: true
+
+      t.timestamps
+    end
+  end
+end

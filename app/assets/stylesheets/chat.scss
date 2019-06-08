@@ -1,0 +1,9 @@
+#ui_form_room {
+}
+
+#new_message {
+  .ui .menu.transition.visible {
+    width: auto !important;
+    z-index: 9999;
+  }
+}

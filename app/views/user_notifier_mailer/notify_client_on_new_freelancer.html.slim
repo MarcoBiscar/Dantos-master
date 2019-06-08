@@ -1,0 +1,9 @@
+p= "Hi #{@user.first_name}"
+p= "Good news, I wanted to follow up personally and let you know that we've matched you with our expert, #{@freelancer.first_name}.
+p= "They are ready and awaiting your reply. Feel free to engage with them by using the link below."
+p= link_to 'Link to the room.', room_url(@room, user_email: @user.email, user_token: @user.authentication_token)
+
+p= "Please let me know if you have any questions or issues by responding to this email."
+p= 'Cheers,'
+  br
+  = 'Greg'

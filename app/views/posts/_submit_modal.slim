@@ -1,0 +1,9 @@
+.ui.small.modal data-modal-id=modal_id
+  h1.ui.center.aligned.header Share your post
+  .content
+    .ui.form.centered
+      .ui.field
+        / = f.collection_select :room_id, current_user.joined_rooms, :id, :id, {prompt: "Share with"}, {class: "ui selection dropdown"}
+      / = f.collection_select :subtopic_id, goomp.subtopics, :id, :name, {prompt: "Choose Sub Topic.. (Optional)"}, {class: "ui selection dropdown"}
+      .ui.field
+        = f.submit "Publish", class: "ui button"

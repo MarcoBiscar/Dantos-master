@@ -1,0 +1,29 @@
+.ui.container.new-post
+  .author-box
+    = image_tag current_user.profile_picture, :class => 'ui avatar image'
+    span = current_user.full_name
+
+  = form_for Post.new, :html => { :class => "ui form new-post", :autocomplete => "off" } do |f|
+    = f.hidden_field :goomp_id
+
+    = f.hidden_field :link_title
+    = f.hidden_field :link_description
+    = f.hidden_field :link_image
+    = f.hidden_field :link_url
+
+    = current_user.avatar
+    = f.text_field :title, :placeholder => "Project Title", :autofocus => true
+    = f.text_area :content, :class => "editable"
+
+    .ui.divider
+    .field#submit_field = f.submit 'Save', :class => "ui button basic blue"
+    .ui.error.message
+css:
+  #submit_field {
+    text-align: center;
+  }
+coffee:
+  $("form.new-post").submit ->
+    content = $($('#post_content').val()).text().trim()
+    $('#post_content').val('') unless content.match(/[a-zA-Z0-9]/i)
+    return

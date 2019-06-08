@@ -1,0 +1,30 @@
+<div class="ui small modal" data-modal-id="<%= modal_id %>">
+  <h1 class="ui center aligned header">
+    Getting Started
+  </h1>
+  <div class="content">
+    <div class="ui center middle aligned centered aligned grid">
+      <div class="ui vertical buttons">
+        <a class="ui twitter large button" data-turbolinks="false" href="<%= user_twitter_omniauth_authorize_path %>">
+          <%# <span style="font-size: 2em" class="typcn typcn-social-twitter"></span> %>
+          Continue with Twitter
+        </a>
+
+        <a class="ui facebook large button" data-turbolinks="false" href="<%= user_facebook_omniauth_authorize_path %>">
+          <%# <span style="font-size: 2em" class="typcn typcn-social-facebook"></span> %>
+          Continue with Facebook
+        </a>
+
+        <a class="ui linkedin large button" data-turbolinks="false" href="<%= user_linkedin_omniauth_authorize_path %>">
+          <%# <span style="font-size: 2em" class="typcn typcn-social-linkedin"></span> %>
+          Continue with Linkedin
+        </a>
+
+        <a class="ui large button" data-modal="signup-modal">
+          Sign in with Email
+        </a>
+        <%= render "pages/signup_modal", modal_id: "signup-modal" %>
+      </div>
+    </div>
+  </div>
+</div>

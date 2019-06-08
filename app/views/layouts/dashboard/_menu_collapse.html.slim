@@ -1,0 +1,43 @@
+- user = current_user
+- user = current_freelancer if freelancer_signed_in?
+
+#toc.ui.vertical.inverted.sidebar.menu.left
+  .item
+    a.ui.logo.icon.image[href="/"]
+      = image_tag 'logo-invert.png', id: 'collapse-menu-logo'
+  .item
+    .ui.dropdown
+      i class="dropdown icon"
+      .menu
+        .item.user
+          = image_tag user.profile_picture, class: 'ui avatar image'
+          = user.try(:name)
+        .item
+          = link_to "Sign Out", destroy_freelancer_session_path, method: :delete if freelancer_signed_in?
+          = link_to "Sign Out", destroy_user_session_path, method: :delete if user_signed_in?
+
+  - if freelancer_signed_in?
+    - if current_freelancer.pending_rooms.any?
+      - current_freelancer.pending_rooms.reorder(last_message_created_at: :desc).includes(:user).each_with_index do |room, index|
+        = link_to room, class: "item #{'active' if @room == room}", style: 'text-align: left;line-height: 20px;color: #888;' do
+          = Sanitize.fragment(truncate(room.get_room_name_for_freelancer(current_freelancer, index), :length => 23, :escape => false), Sanitize::Config::RELAXED).html_safe
+      ui.divider
+    - if current_freelancer.accepted_rooms.any?
+      - current_freelancer.accepted_rooms.reorder(last_message_created_at: :desc).includes(:user).each_with_index do |room, index|
+        = link_to room, class: "item #{'active' if @room == room}" do
+          = Sanitize.fragment(truncate(room.get_room_name_for_freelancer(current_freelancer, index), :length => 23, :escape => false), Sanitize::Config::RELAXED).html_safe
+  - elsif user_signed_in?
+    = link_to 'New Task', new_room_path, class: "item #{'active ' if action_name == 'new'}" if current_user.client?
+    - current_user.joined_rooms.reorder(last_message_created_at: :desc).includes(:user).each_with_index do |room, index|
+      = link_to room, class: "item #{'active' if @room == room}" do
+        = Sanitize.fragment(truncate(room.get_room_name_for_user(current_user, index), :length => 23, :escape => false), Sanitize::Config::RELAXED).html_safe
+.ui.fixed.inverted.main.menu
+  .ui.container
+    a.launch.icon.item
+      i.content.icon
+    - if @room
+      .item
+        - if user_signed_in?
+          h3 = current_user.name
+        - if freelancer_signed_in?
+          h3 = current_freelancer.name

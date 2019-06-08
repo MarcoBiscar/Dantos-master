@@ -1,0 +1,68 @@
+.ui.borderless.fixed.menu
+
+  - if user_signed_in?
+    .header.item
+      = link_to image_tag("logo.png", alt: "Goomp", class: "ui", style: "height: 38px; margin-top: 10px"), root_path
+
+  - elsif @goomp.logo
+    .header.item
+      = link_to image_tag(@goomp.logo, alt: "Goomp", class: "ui", style: "height: 38px; margin-top: 10px"), @goomp
+
+  - if user_signed_in?
+    .right.menu
+      div class="ui pointing dropdown link item"
+        = image_tag current_user.profile_picture, size: "45x45", class: "ui"
+        i class="dropdown icon"
+        .menu
+          = link_to "Create Goomp", new_goomp_path, class: "ui item"
+          = link_to "Sign Out", destroy_user_session_path, method: :delete, class: "ui item"
+
+- if @goomp&.persisted?
+  = render "layouts/goomp_header"
+
+.site-container.small
+  .sidebar.sidebar--left
+    .ui.secondary.vertical.pointing.menu.fluid
+      = link_to "General", @goomp, class: "item #{'active primary' unless params[:subtopic_id]}"
+      - @subtopics.each do |subtopic|
+        = link_to subtopic.name, params.merge(subtopic_id: subtopic.id).permit(:subtopic_id), class: "item #{'active teal' if subtopic.id == params[:subtopic_id].to_i}"
+
+    .ui.text.fluid.vertical.menu
+      - if current_user&.is_manager_of?(@goomp)
+
+        a.item.blue-ink data-toggler="new-chapter" style="margin-left: 16px;" Add Chapter
+        = form_for [@goomp, Subtopic.new], html: { class: "ui form", data: {"toggle-id" => "new-chapter"} }, remote: true do |f|
+
+          div class="field"
+            = f.text_field :name, placeholder: "Chapter Name"
+
+  .sidebar.sidebar--right
+    .ui.text.fluid.vertical.menu
+      = link_to "Write Review", goomp_reviews_path(@goomp), class: "item blue-ink"
+  /     a.item href="/goomps" Invite Members
+
+  .main
+    - if @goomp.has_member? current_user
+      - if @goomp.user == current_user && @posts.size == 0
+        = render "goomp_bot/new_goomp", goomp: @goomp
+
+      - else
+        .ui.segment.narrow
+          = render "post_form", action_url: goomp_posts_path(@goomp), goomp: @goomp
+
+        - if @posts.size == 0
+          .ui.segment.narrow
+            p Nothing to show here yet.
+        - else
+          = render partial: "posts/infinite_posts", locals: { posts: @posts }
+
+    - else
+      h2 Description
+      .ui.card.fluid
+        .content
+          = @goomp.description
+      h2 Creators & Leaders
+      = render "users/user_card", user: @goomp.user
+
+      - if @posts.any?
+        = render partial: "posts/infinite_posts", locals: { posts: @posts }

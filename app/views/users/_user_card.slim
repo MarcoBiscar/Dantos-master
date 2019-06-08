@@ -1,0 +1,9 @@
+= link_to user, class: "ui card user-card", target: "_blank" do
+  .image
+    = image_tag user.profile_picture, style: "height: 200px; width: 200px;"
+  .content
+    .header = user.full_name
+    .meta = user.bio
+  .extra.content
+    - if user_signed_in?
+      = render 'users/follow_button', followable: user

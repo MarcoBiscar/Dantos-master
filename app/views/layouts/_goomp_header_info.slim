@@ -1,0 +1,20 @@
+.info
+  .name
+    / - if user_signed_in? && @goomp.logo
+    /   = link_to image_tag(@goomp.logo, alt: "Goomp", class: "ui", style: "height: 24px")
+
+    = @goomp.name
+    small
+      span.typcn.typcn-group
+      = @goomp.memberships.size
+      '  Members
+
+  .action
+    - if @goomp.reviews.size > 0
+      .ratings
+        ' Ratings
+        span class="ui star rating" data-rating=@goomp.rating.round data-unratable=true
+
+    = render "goomps/join_button", goomp: @goomp
+
+    / = @goomp.average_rating

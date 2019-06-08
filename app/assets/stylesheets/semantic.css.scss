@@ -1,0 +1,50 @@
+@import "font-awesome-sprockets";
+@import "font-awesome";
+
+// $font-url: 'https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin';
+
+//$font-family: "AvenirNextLTPro-Regular";
+
+@font-face {
+  font-family: 'AvenirNextLTPro-Regular';
+  font-weight: normal;
+  font-style: normal;
+  src: asset-url('AvenirNextLTPro-Regular.otf');
+}
+
+@font-face {
+  font-family: "AvenirNextLTPro-Bold";
+  font-weight: bold;
+  src: asset-url('AvenirNextLTPro-Bold.otf');
+}
+
+$font-name: 'Avenir';
+@import 'semantic-ui';
+
+.ui.comments .comment.inline {
+
+  margin: 0em;
+  padding: 0em;
+
+  .content {
+    margin-left: 3.5em;
+  }
+
+}
+
+.post-dialog {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #e1e1e1;
+  border-radius: 5px;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.post-dialog > .title {
+  font-weight: bold;
+}
+
+.ui.button.custom-padding {
+  margin-top: 10px;
+}

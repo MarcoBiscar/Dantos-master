@@ -1,0 +1,1 @@
+json.array! @goomps, partial: 'goomps/goomp', as: :goomp

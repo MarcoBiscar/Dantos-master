@@ -1,0 +1,32 @@
+.ui.container.new-post
+  .author-box-show
+    .left
+      = image_tag current_user.profile_picture, class: 'ui image mini'
+    .right
+      .summary
+        = link_to @post.user.first_name, @post.user, class: "user"
+        '
+        = link_to "#{@post.message.room.get_room_name_for_user(current_user)}", @post.message.room, :class => "goomp-primary"
+      span.date
+        = time_ago_in_words @post.created_at
+        '  ago
+
+  = form_for @post, html: { class: "ui form", autocomplete: "off" } do |f|
+    = f.hidden_field :goomp_id
+
+    = f.hidden_field :link_title
+    = f.hidden_field :link_description
+    = f.hidden_field :link_image
+    = f.hidden_field :link_url
+
+    = current_user.avatar
+    = f.text_field :title, placeholder: "Title", autofocus: true
+    = f.text_area :content, class: "editable"
+
+    .ui.divider
+    .field#submit_field = f.submit 'Save', class: "ui button basic blue"
+
+css:
+  #submit_field {
+    text-align: center;
+  }

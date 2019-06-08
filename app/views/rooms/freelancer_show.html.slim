@@ -1,0 +1,29 @@
+- if @room && (['accepted', 'not_finished', 'completed', 'more_work'].include? @room.get_status(current_freelancer))
+  #ui_form_room.ui.stacked.segment
+    h3 = @room.get_room_name_for_freelancer current_freelancer
+    .ui.divider
+    #messages.ui.comments data-room-id=@room.id
+      .chat-content
+        = render @messages, :user => current_freelancer
+        = render 'slack' if current_freelancer.slack_channels.find_by(room: @room.id).nil?
+
+    - unless current_freelancer.just_accepted_rooms?(@room.id)
+      .ui.active.progress.primary style="display: none"
+        .bar
+          .progress
+  - if @room.finished?
+    = form_for [@room, Message.new], :remote => true, :html => { :class => "ui form" } do |f|
+      .ui.left.action.input.fluid
+        .ui.icon.bottom.left.pointing.dropdown.button.primary
+          i.plus.icon
+          .menu
+            .item.fileinput-button
+              ' Upload File/Photo
+              = f.file_field :image
+
+            .item#charge-amount data-charge-user=true data-charge-amount="#{@room.remaining_amount_cents/100}"
+              | Charge Task
+
+        = f.text_field :body, :autofocus => true, :autocomplete => 'off', :placeholder => "Start typing…"
+- else
+  = render "goomp_bot/new_goomp"

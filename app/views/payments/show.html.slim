@@ -1,0 +1,9 @@
+p#notice = notice
+
+p
+  strong User:
+  = @payment.user
+
+= link_to 'Edit', edit_payment_path(@payment)
+'|
+= link_to 'Back', payments_path

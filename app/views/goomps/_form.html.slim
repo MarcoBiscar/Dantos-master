@@ -1,0 +1,68 @@
+= form_for @goomp, html: { class: "ui form" } do |f|
+  - if @goomp.errors.any?
+    #error_explanation
+      h2 = "#{pluralize(@goomp.errors.count, "error")} prohibited this goomp from being saved:"
+      ul
+        - @goomp.errors.full_messages.each do |message|
+          li = message
+
+  div class="center aligned field"
+    div class="center aligned field"
+      = image_tag 'empty-image.png', id: 'user-avatar'
+
+    a class="filepicker ui primary button" data-ratio="1" Upload logo
+    = f.hidden_field :logo
+
+  div class="field"
+    = f.label :name
+    = f.text_field :name, placeholder: 'Goomp Name'
+
+  div class="field"
+    = f.label :description
+    = f.text_area :description, rows: "3", placeholder: 'Goomp Description'
+
+  div class="field"
+    = label_tag :leaders, 'Group Leaders (You can change this later)'
+
+    .ui.radio.checkbox
+      = radio_button_tag :leaders, "single"
+      = label_tag 'Single (Only Me)'
+
+    .ui.radio.checkbox
+      = radio_button_tag :leaders, "multiple"
+      = label_tag 'Multiple'
+
+  .field
+    = label_tag :add_leaders, "Add leaders"
+
+    .fields
+      .five.wide.field
+        = text_field_tag :first_name, nil, placeholder: 'First Name'
+      .five.wide.field
+        = text_field_tag :last_name, nil, placeholder: 'Last Name'
+      .six.wide.field
+        = text_field_tag :email, nil, placeholder: 'Email'
+
+  .field
+    = label_tag :charge, 'Charge Members (Members who join your goomp)'
+
+    .ui.radio.checkbox
+      = radio_button_tag :free, "free"
+      = label_tag 'Free'
+
+    .ui.radio.checkbox
+      = radio_button_tag :paid, 'paid'
+      = label_tag 'Paid (Monthly)'
+
+  .inline.field
+    = f.label :price, "Monthly Subscription"
+    br
+    div class="ui right labeled input"
+      div class="ui label" $
+      = f.number_field :price, placeholder: "Amount", value: 0
+      div class="ui basic label" .00
+
+  .centered style='margin-top: 20px'
+    = f.submit "Create", class: "ui primary button "
+
+  div class="ui error message"

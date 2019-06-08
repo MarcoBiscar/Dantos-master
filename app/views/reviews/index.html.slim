@@ -1,0 +1,26 @@
+.sidebar.sidebar--left
+  .ui.secondary.fluid.vertical.menu
+    = link_to "General", @goomp, class: "active item"
+    - @goomp.subtopics.each do |subtopic|
+      = link_to subtopic.name, subtopic, class: "item"
+
+  .ui.text.fluid.vertical.menu
+    - if current_user&.is_manager_of?(@goomp)
+      a.item.blue-ink data-toggler="new-chapter" style="margin-left: 8px;" Add Chapter
+      = form_for [@goomp, Subtopic.new], html: { class: "ui form", data: {"toggle-id" => "new-chapter"} } do |f|
+        div class="field"
+          = f.text_field :name, placeholder: "Chapter Name"
+
+.sidebar.sidebar--right
+  .ui.text.fluid.vertical.menu
+/     a.item href="/goomps" Invite Members
+
+.main
+  .ui.segment
+    = render "reviews/form", action_url: goomp_reviews_path(@goomp), goomp: @goomp
+
+  - if @reviews.any?
+    .js-infinite
+      .ui.segments.js-infinite--list
+        = render partial: "reviews/review", collection: @reviews, cached: false
+      .js-infinite--pagination = link_to_next_page @reviews, 'Next Page', remote: true

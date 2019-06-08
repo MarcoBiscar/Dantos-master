@@ -1,0 +1,18 @@
+- if @room
+  - slack_channel = current_user.slack_channels.find_by(room: @room)
+  #ui_form_room.ui.stacked.segment
+    h3 = @room.get_room_name
+    .ui.active.progress.primary style="display: none"
+      .bar
+        .progress
+    .ui.divider
+    #messages.ui.comments data-room-id=@room.id
+      .chat-content
+        = render @messages, :user => current_user
+      - if @room.finished? && slack_channel.nil? && current_user.client?
+        = render 'chatbot'
+  - if @room.finished?
+    = render 'new_message'
+- else
+  = render "goomp_bot/new_goomp"
+

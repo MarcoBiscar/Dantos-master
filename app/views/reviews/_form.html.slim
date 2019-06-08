@@ -1,0 +1,17 @@
+= form_for [goomp, Review.new], html: { class: "ui form" }, remote: true do |f|
+  / - if @review.errors.any?
+  /   #error_explanation
+  /     h2 = "#{pluralize(@review.errors.count, "error")} prohibited this review from being saved:"
+  /     ul
+  /       - @review.errors.full_messages.each do |message|
+  /         li = message
+
+  = f.text_area :body, rows: 4
+
+  .ui.hidden.divider
+
+  .ui.field
+    = f.hidden_field :rating, data: { "ratable-id" => "hidden-rating" }
+    div class="ui star rating" data-rating=0 data-ratable="hidden-rating"
+
+  = f.submit "Post Review", class: "ui button", data: { disable_with: "Posting…" }

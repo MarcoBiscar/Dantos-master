@@ -1,0 +1,17 @@
+.comment
+  a.avatar
+    = image_tag comment.user.profile_picture
+
+  .content
+    a.author = comment.user.full_name
+    ' ,
+    span.headline = comment.user.headline
+    div class="text"
+      = comment.body
+    div class="actions"
+      = render "comments/like_button", likable: comment
+      span.comment--date
+        = time_ago_in_words comment.created_at
+        '  ago
+
+  .ui.divider

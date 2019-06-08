@@ -1,0 +1,17 @@
+.ui.segment.feed
+  .event
+    .label
+      img src="#{review.user.profile_picture}"
+    .content
+      .summary
+        = link_to review.user.full_name, review.user, class: "user"
+        span.helper posted to
+        = link_to review.goomp.name, review.goomp, class: "goomp-primary"
+      span.date
+        = time_ago_in_words review.created_at
+        '  ago
+
+  .extra.text
+    = truncate_body_link review.body
+    p
+      div class="ui star rating" data-rating=review.rating data-unratable=true

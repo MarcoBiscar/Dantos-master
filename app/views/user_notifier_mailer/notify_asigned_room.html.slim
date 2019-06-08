@@ -1,0 +1,9 @@
+p= "Hey #{@user.full_name}"
+p
+  ' Good news, you've been assigned a new task. Please click on
+  = link_to 'this', room_url(@room, freelancer_email: @user.email, freelancer_token: @user.authentication_token)
+  '  to accept or pass.
+p
+  = 'Cheers,'
+  br
+  = 'Kriya Bot'

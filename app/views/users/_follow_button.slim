@@ -1,0 +1,22 @@
+= form_tag follow_user_path(followable), style: "display: inline", remote: true, data: { "follow-user-button": dom_id(followable) } do
+
+  - if followable.followed_by? current_user
+    .ui.labeled.button
+      = button_tag class: "ui primary mini button" do
+        span.typcn.typcn-heart-outline
+        ' Following
+      .ui.basic.goomp-primary-color.label = followable.follows_count
+
+  - else
+    - if followable.follows_count > 0
+      .ui.labeled.button
+        = button_tag class: "ui basic goomp-primary-color button mini" do
+          span.typcn.typcn-heart-outline
+          ' Follow
+
+      .ui.basic.goomp-primary-color.label = followable.follows_count
+
+    - else
+      = button_tag class: "ui basic goomp-primary-color button mini" do
+        span.typcn.typcn-heart-outline
+        ' Follow

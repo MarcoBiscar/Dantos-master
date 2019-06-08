@@ -1,0 +1,46 @@
+div class="ui segment feed"
+  div class="event"
+    div class="label"
+      img src="/favicon.ico"
+    div class="content"
+      div class="summary" Kriya Bot
+      span class="date" Just Now
+      #chat
+      div class="extra text"
+
+coffee:
+  new Chat(
+    {
+        greeting: [
+          'First, let’s create an introductory video so anyone visiting your Goomp page will get the preview. ',
+          """
+            <input type="text" name="post[body]" id="video-embed" />
+            <div id="video-preview"></div>
+            <input type="submit" value="Add" class="ui button"></div>
+          """,
+          {
+            type: 'choose',
+            answers: [{
+              'text': 'I don’t have a video! ',
+              'path': 'write'
+            }]
+          }
+        ],
+
+        write: [
+          'No video?'
+          'Not a problem.'
+          'Let’s publish a detailed introductory post.'
+          'This will be a great chance for you to elaborate details of your group that can be used to promote your Goomp.'
+          {
+            type: 'visit',
+            answers: [{
+              'text': 'Write Story',
+              'path': '/posts/new'
+            }]
+          }
+        ],
+    }, {
+      targetNode: '#chat'
+    }
+  )

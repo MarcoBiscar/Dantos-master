@@ -1,0 +1,29 @@
+h1 Listing posts
+
+table
+  thead
+    tr
+      th Body
+      th Comments count
+      th Goomp
+      th User
+      th Subtopic
+      th
+      th
+      th
+
+  tbody
+    - @posts.each do |post|
+      tr
+        td = post.body
+        td = post.comments_count
+        td = post.goomp
+        td = post.user
+        td = post.subtopic
+        td = link_to 'Show', post
+        td = link_to 'Edit', edit_post_path(post)
+        td = link_to 'Destroy', post, data: { confirm: 'Are you sure?' }, method: :delete
+
+br
+
+= link_to 'New Post', new_post_path

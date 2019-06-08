@@ -1,0 +1,555 @@
+extractURL = (textval) ->
+  urlRegex = /\b((?:https?:\/\/|www\d{0,3}[.])(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s\`!()\[\]{};:\'\".,<>?«»“”‘’]))/img
+  urlFinal = ''
+  textval.replace(urlRegex, (url) -> urlFinal = url)
+  urlFinal
+
+youtubeIframe = (vid) ->
+  """
+    <iframe width="557" height="270" src="https://www.youtube.com/embed/#{vid}?feature=oembed" frameborder="0" allowfullscreen></iframe>
+  """
+
+vimeoIframe = (vid) ->
+  """
+    <iframe src="https://player.vimeo.com/video/#{vid}" width="640" height="360" frameborder="0" title="" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+  """
+
+getVideo = (url, callback) ->
+  youtubeRegex = /(?:youtube\.com\/\S*(?:(?:\/e(?:mbed))?\/|watch\/?\?(?:\S*?&?v\=))|youtu\.be\/)([a-zA-Z0-9_-]{6,11})/
+  vimeoRegex = /([a-z\:\/]*\/\/)(?:www\.)?vimeo\.com\/(?:channels\/[A-Za-z0-9]+\/)?([A-Za-z0-9]+)/
+  iframe = null
+  if url.length > 0
+    youtubeMatch = url.match(youtubeRegex)
+
+    if youtubeMatch
+      vid = youtubeMatch[youtubeMatch.length-1]
+      callback {
+        iframe: youtubeIframe(vid)
+      }
+
+      # oembed = "https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=#{vid}&format=json"
+      # $.get oembed, (data) ->
+      #   return {
+      #     image: data.thumbnail_url
+      #     title: data.title
+      #     iframe: youtubeIframe(vid)
+      #     description: data.author_name
+      #   }
+    else
+      vimeoMatch = url.match(vimeoRegex)
+      vid = vimeoMatch[2]
+      callback {
+        iframe: vimeoIframe(vid)
+      }
+
+      # oembed = "https://vimeo.com/api/oembed.json?url=https%3A//vimeo.com/#{vid}"
+      # $.get oembed, (data) ->
+      #   return {
+      #     image: data.thumbnail_url
+      #     title: data.title
+      #     iframe: vimeoIframe(vid)
+      #     description: data.author_name
+      #   }
+
+AppView = {
+  initialize: ->
+    $(document).off("change", "#user_gender_female").on "change", "#user_gender_female", @setFemaleAvatar
+    $(document).off("change", "#user_gender_male").on "change", "#user_gender_male", @setMaleAvatar
+    $(document).off("input", "#post_body").on "input", "#post_body", @scrapeUrl
+    $(document).off("click", ".filepicker").on "click", ".filepicker", @pickFile
+    $(document).off("click", "[data-modal]").on "click", "[data-modal]", @openModal.bind(this)
+    $(document).off("input", "#video-embed").on "input", "#video-embed", @embedVideo
+    $(document).off("click", "[data-change-cover]").on "click", "[data-change-cover]", @changeCover
+    $(document).off("submit", 'form[method="get"][data-remote="true"]').on "submit", 'form[method="get"][data-remote="true"]', @remoteSubmitGetForm
+    $(document).off("click", "[data-toggler]").on "click", "[data-toggler]", @toggleToggler
+    $(document).off("click", "[data-video]").on "click", "[data-video]", @toggleVideo
+    $(document).off("click", "[data-create-post]").on "click", "[data-create-post]", @createPost
+    $(document).off("click", "[data-charge-user]").on "click", "[data-charge-user]", @chargeUser
+    $(document).off("keypress keydown keyup", "#new_post input[type=text]").on "keypress keydown keyup", "#new_post input[type=text]", (e) ->
+      if e.which == 13
+        e.preventDefault()
+        return false
+    $(document).off("ajax:error").on "ajax:error", (event, xhr, status, error) ->
+      console.log xhr.responseText
+      console.log error
+
+    $(document).off("turbolinks:before-cache").on("turbolinks:before-cache", @preparePageForTurbolinks)
+
+
+    @initFancyBox()
+    @initSemanticUI()
+    @initEditor()
+    @initInfinitePage()
+    @initStripe()
+    @initSearch()
+    @initFileupload()
+    @markMessagesSeen()
+    @clearTextArea()
+    ChatWindow.initialize()
+
+
+  createPost: ->
+
+  markMessagesSeen: ->
+    $('#new_message').on "click", "#message_body", ->
+      roomId = $("#messages").data("room-id")
+
+      if $("#messages").data("has-new-message") == true
+        $("#messages").data("has-new-message", false)
+        $.ajax(
+          url: "/tasks/#{roomId}/mark_messages_seen.json"
+          type: "POST"
+        )
+
+
+  chargeUser: ->
+    amount = $('#charge-amount').data('charge-amount')
+    $("#message_body").val("/charge $#{amount}")
+    $("#message_body").focus()
+
+  clearTextArea: ->
+    $('#new_message').submit ->
+      setTimeout (->
+        $("#message_body").val ''
+        return
+      ), 100
+      return
+
+  initFileupload: ->
+    $("#new_message").form
+      fields:
+        body:
+          identifier: 'message[body]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter content'
+          }]
+
+    $("#new_message").fileupload(
+      dataType: 'json'
+      progress: (e, data) ->
+        progress = parseInt(data.loaded / data.total * 100, 10)
+        if progress == 100
+          $(".ui.progress .bar .progress").text "Processing uploaded files…"
+        else
+          $('.ui.progress .bar .progress').text "Uploading…#{progress}%"
+
+        $('.bar').css('width', progress + '%')
+    ).bind('fileuploadadd', (e, data) ->
+      $(".ui.progress").show()
+    ).bind('fileuploaddone', (e, data) ->
+      console.log 'donnnnnnnnnnn'
+      $(".ui.progress").hide()
+    )
+
+
+  initStripe: ->
+    key = $("meta[name=stripePublishableKey]").attr("content")
+
+    $(".stripe-button").click (e) ->
+      e.preventDefault()
+
+      $button = $(e.target)
+      goomp_id = $button.data("id")
+      goomp_logo = $button.data("logo")
+
+      handler = StripeCheckout.configure(
+        key: key
+        image: goomp_logo
+        locale: 'auto',
+        token: (token) ->
+          $.post "/goomps/#{goomp_id}/join", token: token
+          # You can access the token ID with `token.id`.
+          # Get the token ID to your server-side code for use.
+      )
+
+      $(window).on 'popstate', -> handler.close()
+
+      handler.open(
+        name: $button.data("name")
+        description: $button.data("description")
+        amount: $button.data("amount")
+      )
+
+  initInfinitePage: ->
+    $('.js-infinite').infinitePages
+      debug: true
+      loading: ->
+        $(this).text('Loading next page...')
+      error: ->
+        $(this).button('There was an error, please try again')
+
+  toggleToggler: (e) ->
+    e.preventDefault()
+    toggler_id = $(e.target).data("toggler")
+    $(e.target).remove()
+    $("[data-toggle-id=#{toggler_id}]").show()
+    $("[data-toggle-id=#{toggler_id}] input").focus()
+
+  changeCover: (e) ->
+    e.preventDefault()
+    goomp_id = $(e.target).data("goomp-id")
+
+    filepicker.pick({cropRatio: 4.6875}, (Blob) ->
+      $.ajax(
+        url: "/goomps/#{goomp_id}.json"
+        type: "patch"
+        data:
+          goomp:
+            cover: Blob.url
+        success: (link) ->
+          $(".cover > img").attr 'src', Blob.url
+        error: (resp) ->
+          link = resp.data
+          console.log 'err', link
+      )
+    )
+
+  pickFile: (e) ->
+    e.preventDefault()
+    if filepicker
+      options = {}
+      $el = $(e.target)
+
+      dimension = $el.data("dimension")
+      ratio = $el.data("ratio")
+      if dimension
+        options.cropDim = [parseInt(dimension.split(',')[0]), parseInt(dimension.split(',')[1])]
+
+      if ratio
+        options.cropRatio = ratio
+
+      filepicker.pick(options, (Blob) ->
+        $el.parent().find("img").attr("src", Blob.url)
+        $el.parent().find("input[type=hidden]").val(Blob.url)
+      )
+
+  openModal: (e) ->
+    e.preventDefault()
+    modal_id = $(e.target).data('modal')
+    if modal_id == "post-modal"
+      $("[data-modal-id=#{modal_id}]").modal(
+        detachable: false
+      )
+
+      cleanContent = ""
+      for k,v in @editor.serialize()
+        cleanContent = v.value
+
+    $("[data-modal-id=#{modal_id}]").modal('show')
+
+  initSemanticUI: ->
+    $('.fixed.menu a.launch').click ->
+      $('.ui.sidebar').sidebar('toggle')
+
+    $('.ui.checkbox').checkbox()
+    $('.ui.rating').rating(
+      maxRating: 5
+      onRate: (val) ->
+        ratable_id = $(this).data("ratable")
+        $("[data-ratable-id=#{ratable_id}]").val val
+    )
+    $('.ui.rating').rating('disable')
+    $('[data-ratable=false]').rating('disable')
+    $('[data-unratable]').rating('disable')
+    $('.ui.dropdown').dropdown(on: 'click')
+    $("#new_post").form(
+      on: 'blur'
+      fields:
+        title:
+          identifier: 'post[title]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter title'
+          }]
+        body:
+          identifier: 'post[body]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter content'
+          }]
+
+        content:
+          identifier: 'post[content]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter content'
+          }]
+        goomp_id:
+          identifier: 'dropdown'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please choose a goomp'
+          }]
+    )
+    $("#new_goomp").form(
+      on: 'blur'
+      fields:
+        cover:
+          identifier: 'goomp[cover]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please upload cover'
+          }]
+        name:
+          identifier: 'goomp[name]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter name'
+          }]
+        description:
+          identifier: 'goomp[description]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter description'
+          }]
+    )
+    $("#new_user").form(
+      on: 'blur'
+      fields:
+        firstName:
+          identifier: 'user[first_name]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter first name'
+          }]
+        lastName:
+          identifier: 'user[last_name]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter last name'
+          }]
+        gender:
+          identifier: 'user[gender]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please choose gender'
+          }]
+        email:
+          identifier: 'user[email]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter email'
+          }]
+        headline:
+          identifier: 'user[headline]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter headline'
+          }]
+    )
+    $("#new_freelancer").form(
+      on: 'blur'
+      fields:
+        firstName:
+          identifier: 'freelancer[first_name]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter first name'
+          }]
+        lastName:
+          identifier: 'freelancer[last_name]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter last name'
+          }]
+        gender:
+          identifier: 'freelancer[gender]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please choose gender'
+          }]
+        email:
+          identifier: 'freelancer[email]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter email'
+          }]
+        headline:
+          identifier: 'freelancer[headline]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter headline'
+          }]
+        category:
+          identifier: 'freelancer[category]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please select type'
+          }]
+        availability:
+          identifier: 'freelancer[availability]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please select availability'
+          }]
+        skills:
+          identifier: 'freelancer[skills]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please select skills'
+          }]
+        primary_skill:
+          identifier: 'freelancer[primary_skill]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please select primary skill'
+          }]
+        years_of_experiences:
+          identifier: 'freelancer[years_of_experiences]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please input years of experiences'
+          }]
+        hourly_rate_in_dollar:
+          identifier: 'freelancer[hourly_rate_in_dollar]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please input hourly rate'
+          }]
+        project_description:
+          identifier: 'freelancer[project_description]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please input project description'
+          }]
+        skills:
+          identifier: 'skill_ids'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please select skills'
+          }]
+        professional_profile_link1:
+          identifier: 'freelancer[professional_profile_link1]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please input professional profile_link'
+          }]
+        password:
+          identifier: 'user[password]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please enter password'
+          }]
+        passwordConfirmation:
+          identifier: 'user[password_confirmation]'
+          rules: [{
+            type   : 'empty',
+            prompt : 'Please confirm password'
+          }]
+    )
+
+  setFemaleAvatar: ->
+    url = ""
+    val = $("#user_picture").val()
+    if val.length == 0 || val.indexOf("default-male") > -1
+      $("#user-avatar").attr("src", url)
+      $("#user_picture").val(url)
+
+  initSearch: ->
+    $('.ui.dropdown.search').dropdown
+      apiSettings:
+        url: '/skills/search?query={query}'
+      match: 'text'
+      minCharacters: 2
+      maxSelections: 3
+
+
+  setMaleAvatar: ->
+    url = ""
+    val = $("#user_picture").val()
+    if val.length == 0 || val.indexOf("default-female") > -1
+      $("#user-avatar").attr("src", url)
+      $("#user_picture").val(url)
+
+  embedVideo: (e) ->
+    e.stopPropagation()
+    text = $(e.target).val()
+    url = extractURL(text)
+
+    loader = """
+      <div class="ui text loader">Loading</div>
+    """
+
+    if url.length > 0
+      $("#video-preview").html getVideo(url).iframe
+
+  toggleVideo: (e) ->
+    e.preventDefault()
+    $('.img', this).replaceWith $(this).data('video')
+
+  scrapeUrl: (e) ->
+    e.stopPropagation()
+    $form = $("#post_body").parents("form")
+
+    unless $("#post_link_url", $form).val().length > 0
+      text = $("#post_body").val()
+
+      url = extractURL(text)
+
+      if url.length > 0
+        $.ajax(
+          url: "/scrapes.json"
+          type: "post"
+          data:
+            url: url
+          success: (link) ->
+            $("#post_link_url", $form).val url
+            $("#post_link_title", $form).val link.title
+            $("#post_link_image", $form).val link.image
+            $("#post_link_description", $form).val link.description
+            $("#post_link_video", $form).val link.video
+            $("#link-card").html link.card
+          error: (resp) ->
+            link = resp.data
+            console.log 'err', link
+        )
+
+  preparePageForTurbolinks: ->
+    # Make sure chat board is clear if user go back
+    $("#chat").html "" if $("#chat").length > 0
+
+    # $(".ui.modals").remove() if $(".ui.modals").length > 0
+    $(".ui.modals").remove()
+
+  remoteSubmitGetForm: (e) ->
+    separator = if this.action.indexOf('?') == -1 then '?' else '&'
+    Turbolinks.visit(this.action+separator+$(this).serialize())
+    return false
+
+  initEditor: ->
+    @editor = new MediumEditor('.editable',
+      placeholder:
+        text: 'Describe your project in as much detailing as possible..'
+        hideOnClick: false
+    )
+    $('.editable').mediumInsert(
+      editor: @editor
+      addons:
+        images:
+          uploadCompleted: ($el, data) ->
+            photo = data.result.files[0]
+            $("img", $el).data "delete-url", photo.delete_url
+            $("#post_link_image").val(photo.cover_url) unless $("#post_link_image").val().length > 0
+          # label: '<span class="typcn typcn-camera"></span>'
+          fileUploadOptions:
+            url: "/photos"
+        # embeds:
+          # label: '<span class="typcn typcn-media-play"></span>'
+    )
+
+  initFancyBox: ->
+    $galleryHolder = $('#gallery_holder')
+    if $galleryHolder.length == 0
+      $galleryHolder = $('<div id="gallery_holder"></div>').appendTo(document.body)
+
+    $(".ui.comments a.fancybox").fancybox
+      parent: $galleryHolder
+      padding : 0
+      openEffect  : 'elastic'
+}
+
+document.addEventListener "turbolinks:load", ->
+  AppView.initialize()
+
+$(document).on('message:added', (e) -> AppView.initFancyBox())

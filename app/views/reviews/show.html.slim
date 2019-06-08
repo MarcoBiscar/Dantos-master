@@ -1,0 +1,18 @@
+p#notice = notice
+
+p
+  strong Goomp:
+  = @review.goomp
+p
+  strong User:
+  = @review.user
+p
+  strong Rating:
+  = @review.rating
+p
+  strong Body:
+  = @review.body
+
+= link_to 'Edit', edit_review_path(@review)
+'|
+= link_to 'Back', reviews_path

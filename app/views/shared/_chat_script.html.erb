@@ -1,0 +1,251 @@
+<%- new_user ||= false %>
+<script>
+
+  var category = [
+    "Hi! I am Kriya Bot. I will help you connect with the top talent. Please choose one of the departments:",
+    {
+      type: 'choose',
+      answers: [{
+        'text': 'Engineering',
+        'key': 'category_name',
+        'path': 'timeline'
+        },
+        {
+        'text': 'Data Science',
+        'key': 'category_name',
+        'path': 'timeline'
+        },
+        {
+        'text': 'Design',
+        'key': 'category_name',
+        'path': 'timeline'
+        },
+        {
+        'text': 'Marketing',
+        'key': 'category_name',
+        'path': 'timeline'
+        },
+        {
+        'text': 'Writing',
+        'key': 'category_name',
+        'path': 'timeline'
+        }
+      ]
+    }
+  ];
+  var timeline = [
+    'Please choose your project timeline',
+    {
+      type: 'choose',
+      answers: [
+      {
+        'text': '1 week',
+        'path': 'expertiseLevel',
+        'key': 'timeline'
+      },
+      {
+        'text': '2 weeks',
+        'path': 'expertiseLevel',
+        'key': 'timeline'
+      },
+      {
+        'text': '3 weeks',
+        'path': 'expertiseLevel',
+        'key': 'timeline'
+      },
+      {
+        'text': '1 month',
+        'path': 'expertiseLevel',
+        'key': 'timeline'
+      },
+      {
+        'text': '6 months',
+        'path': 'expertiseLevel',
+        'key': 'timeline'
+      }
+      ]
+    }
+  ];
+  var expertise_level = [
+    'Please choose the expertise level',
+    {
+      type: 'choose',
+      answers: [{
+          'text': 'Basic',
+          'path': 'budget',
+          'key': 'quality'
+        },
+        {
+          'text': 'Intermediate',
+          'path': 'budget',
+          'key': 'quality'
+        },
+        {
+          'text': 'Experienced',
+          'path': 'budget',
+          'key': 'quality'
+        }
+      ]
+    }
+  ];
+  var budget = [
+    'What is your budget estimate for this task in USD?',
+    {
+      type: 'write',
+      path: "<%= new_user ? 'dummy' : 'description' %>",
+      key: "budget"
+    }
+  ];
+
+  var description = [
+    "Please give detailed description of what needs to be done by creating a post, meanwhile I'll get this started with our workforce",
+    {
+      type: 'open-modal',
+      path: 'notice',
+      key: "description",
+      answers: [{
+        'text': 'Add Description',
+        'path': 'description',
+        'key': 'quality'
+      }]
+    }
+  ];
+
+  var video = [
+    'Please enter your credit card information while I pull the best resources and get this started soon. Remember that I give you a full refund for an unsatisfied service!',
+    {
+      type: 'write',
+      path: 'notice',
+      key: "credit-card"
+    }
+  ];
+  var notice = [
+    'Please note that we are charging your card with the budget amount',
+    {
+      type: 'submit',
+      answers: [{
+        'text': 'Ok',
+        'path': '/goomps/new'
+      }]
+    }
+  ];
+
+  var sign_up = [
+    'Sounds good, please sign up to help us understand more about your project',
+    {
+      type: 'visit',
+      answers: [{
+        'text': 'Twitter',
+        'path': '/auth/twitter?user=client'
+      },{
+        'text': 'Facebook',
+        'path': '/auth/facebook?user=client'
+      },{
+        'text': 'LinkedIn',
+        'path': '/auth/linkedin?user=client'
+      },{
+        'text': 'Email',
+        'path': '/users/sign_up'
+      }]
+    }
+  ];
+  var login = [
+    'Cool, please login or sign up to get to your projects',
+    {
+      type: 'visit',
+      answers: [{
+        'text': 'Twitter',
+        'path': '/auth/twitter?user=client'
+      },{
+        'text': 'Facebook',
+        'path': '/auth/facebook?user=client'
+      },{
+        'text': 'LinkedIn',
+        'path': '/auth/linkedin?user=client'
+      },{
+        'text': 'Email',
+        'path': '/users/sign_in'
+      }]
+    }
+  ];
+  var dummy = [
+    '',
+    {
+      type: 'submitDummy',
+      path: 'signup',
+      key: 'submit-dummy'
+    }
+  ];
+
+  var network = [
+    '',
+    {
+      type: 'visit',
+      path: '/freelancers/sign_in'
+    }
+  ];
+
+  var freelancer_login = [
+    'Cool, please login or sign up to get to your projects',
+    {
+      type: 'visit',
+      answers: [{
+        'text': 'Twitter',
+        'path': '/auth/twitter?user=freelancer'
+      },{
+        'text': 'Facebook',
+        'path': '/auth/facebook?user=freelancer'
+      },{
+        'text': 'LinkedIn',
+        'path': '/auth/linkedin?user=freelancer'
+      },{
+        'text': 'Email',
+        'path': '/freelancers/sign_in'
+      }]
+    }
+  ];
+
+  <%- if new_user %>
+    var configs = {
+      greeting: [
+        'Welcome to Kriya. Connect with our A.I. vetted <b>engineers</b>, <b>data scientists</b>, <b>marketers</b> and <b>designers</b> into your teams for getting work done!',
+        {
+          type: 'choose',
+          answers: [
+            {
+              'text': 'Create Project',
+              'path': 'options'
+            },
+            {
+              'text': 'Sign In',
+              'path': 'login'
+            }
+          ]
+        }
+      ],
+      freelancer_login: freelancer_login,
+      options: category,
+      timeline: timeline,
+      expertiseLevel: expertise_level,
+      budget: budget,
+      dummy: dummy,
+      login: login,
+      signup: sign_up
+    };
+  <%- else %>
+    var configs = {
+      greeting: category,
+      timeline: timeline,
+      expertiseLevel: expertise_level,
+      budget: budget,
+      description: description
+    };
+  <%- end %>
+
+  new Chat(
+    configs,
+    {
+      targetNode: '#chat'
+    }
+  );
+</script>

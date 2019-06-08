@@ -1,0 +1,27 @@
+.ui.borderless.fixed.menu
+  - if @goomp
+    = link_to image_tag("logo.png", alt: "Kriya",  class: "ui logo"), goomp_path(@goomp), class: "header item"
+  - else
+    = link_to image_tag("logo.png", alt: "Kriya",  class: "ui logo"), root_path, class: "header item"
+  .right.menu
+    .item
+      a.ui.button data-modal="post-modal" Update
+
+.ui.container.new-post
+  .author-box
+    = image_tag current_user.profile_picture, class: 'ui avatar image'
+    span = current_user.full_name
+
+  = form_for @post, html: { class: "ui form", autocomplete: "off"} do |f|
+    = f.hidden_field :goomp_id
+
+    = f.hidden_field :link_title
+    = f.hidden_field :link_description
+    = f.hidden_field :link_image
+    = f.hidden_field :link_url
+
+    = current_user.avatar
+    = f.text_field :title, placeholder: "Title", autofocus: true
+    = f.text_area :content, class: "editable"
+
+    = render "submit_modal", modal_id: "post-modal", f: f

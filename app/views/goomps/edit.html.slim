@@ -1,0 +1,41 @@
+div class="ui stackable grid container"
+  div class="two wide column"
+  div class="twelve wide column"
+    div class="ui segment"
+      h2.text-center.heading.border-bottom
+        ' Edit Goomp
+        = link_to @goomp.name, @goomp
+
+      = form_for @goomp, html: { class: "ui form" } do |f|
+        - if @goomp.errors.any?
+          #error_explanation
+            h2 = "#{pluralize(@goomp.errors.count, "error")} prohibited this goomp from being saved:"
+            ul
+              - @goomp.errors.full_messages.each do |message|
+                li = message
+
+        div class="center aligned field"
+          div class="center aligned field"
+            img#user-avatar src=@goomp.logo
+
+          a class="filepicker ui primary button" data-ratio="1" Upload logo
+          = f.hidden_field :logo
+
+        div class="center aligned field"
+          div class="center aligned field"
+            img#user-avatar src=@goomp.cover
+
+          a class="filepicker ui primary button" data-ratio="4.68" Upload cover
+          = f.hidden_field :cover
+
+        div class="field"
+          = f.label :name
+          = f.text_field :name
+
+        div class="field"
+          = f.label :description
+          = f.text_area :description
+
+        = f.submit "Save", class: "ui primary button"
+        div class="ui error message"
+

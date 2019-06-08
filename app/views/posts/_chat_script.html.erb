@@ -1,0 +1,123 @@
+<%- new_user ||= false %>
+<script>
+
+  var sign_up = [
+    'Please choose your sign up mode',
+    {
+      type: 'visit',
+      answers: [{
+        'text': 'Twitter',
+        'path': '/auth/twitter?user=freelancer'
+      },{
+        'text': 'Facebook',
+        'path': '/auth/facebook?user=freelancer'
+      },{
+        'text': 'LinkedIn',
+        'path': '/auth/linkedin?user=freelancer'
+      },{
+        'text': 'Email',
+        'path': '/freelancers/sign_up'
+      }]
+    }
+  ];
+  var login = [
+    'Cool, please login or sign up to get to your projects',
+    {
+      type: 'visit',
+      answers: [{
+        'text': 'Twitter',
+        'path': '/auth/twitter?user=freelancer'
+      },{
+        'text': 'Facebook',
+        'path': '/auth/facebook?user=freelancer'
+      },{
+        'text': 'LinkedIn',
+        'path': '/auth/linkedin?user=freelancer'
+      },{
+        'text': 'Email',
+        'path': '/freelancers/sign_in'
+      }]
+    }
+  ];
+
+  var description = [
+    'Thanks for signing up and welcome to Kriya! We are glad you are here. Every profile goes through a screening process before your profile becomes live to accept gigs. You will be notified via email once done!'
+  ];
+
+  <%- if new_user && @post.present? && @post.room.present? %>
+
+    var taskDescription = [
+      '<%== escape_javascript ["<p>Hi, I am Kriya Bot. One of our clients need the following task to be done. If you or anyone you know can do this, please share it or sign up.</p>", "<h2>#{@post.title}</h2>", "<p>#{@post.content}</p>"].join('').html_safe %>',
+      {
+        type: 'blank',
+        path: 'timeLine'
+      }
+    ]
+
+    var timeLine = [
+      '<%== escape_javascript "<div class='cui__bubble cui__bubble--response no-float'><b>Budget:</b> #{number_to_currency @post.room.budget}</div>" %>' +
+      '<%== escape_javascript "<div class='cui__bubble cui__bubble--response no-float'><b>Date posted:</b> #{@post.created_at.to_date.to_s(:long)}</div>" %>' +
+      '<%== escape_javascript "<div class='cui__bubble cui__bubble--response no-float'><b>Timeline:</b> #{@post.room.timeline}</div>" %>',
+      {
+        type: 'choose',
+        answers: [
+          {
+            'text': 'Get Started',
+            'path': 'signup'
+          },
+          {
+            'text': 'Sign In',
+            'path': 'login'
+          }
+        ]
+      }
+    ]
+
+    var configs = {
+      greeting: taskDescription,
+      timeLine: timeLine,
+      login: login,
+      signup: sign_up
+    };
+  <%- elsif freelancer_signed_in? %>
+    <%- if current_freelancer.pending_rooms.any? %>
+      <%- unless @room.in_progress_freelancers.any? %>
+        var description = [
+          'You are now assigned to <%= @room.title %>. Are you available to finish this project within the given timeline? <br> <%= @room.posts.first.content.gsub("'", %q(\\\')).split.join(' ').html_safe %>',
+          {
+            type: 'visit',
+            path: 'notice',
+            key: "description",
+            answers: [{
+              'text': 'Accept',
+              'path': '/tasks/<%= @room.id %>/accept' ,
+              'key': 'quality'
+            },{
+              'text': 'Pass',
+              'path': '/tasks/<%= @room.id %>/reject' ,
+              'key': 'quality'
+            }]
+          }
+        ];
+      <%- else %>
+        var description = [
+          "Sorry the task has already been assigned to someone else as they claimed it first."
+        ];
+      <%- end %>
+      var configs = {
+        greeting: description
+      };
+    <%- else %>
+      var configs = {
+        greeting: description
+      };
+    <%- end %>
+  <%- end %>
+
+  new Chat(
+    configs,
+    {
+      targetNode: '#chat'
+    }
+  );
+</script>

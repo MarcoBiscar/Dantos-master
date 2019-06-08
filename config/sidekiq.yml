@@ -1,0 +1,13 @@
+---
+:concurrency: 5
+:pidfile: tmp/pids/sidekiq.pid
+:logfile: log/sidekiq.log
+:queues:
+  - room
+  - payment
+  - slack
+  - slack_events_handler
+  - unseen_message_alert
+  - welcome_email_alert
+  - welcome_email_follow_up_alert
+

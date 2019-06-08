@@ -1,0 +1,21 @@
+= form_tag like_post_path(likable), style: "display: inline", remote: true, data: { "like-post-button": dom_id(likable) } do
+
+  - if likable.liked_by? current_user
+    .ui.labeled.button
+      = button_tag class: 'ui primary mini button' do
+        span.typcn.typcn-heart-full-outline
+        ' Liked
+      .ui.basic.mini.goomp-primary-color.label = likable.likes_count
+
+  - else
+    - if likable.likes_count > 0
+      .ui.labeled.button
+        = button_tag class: 'ui basic goomp-primary-color button mini' do
+          span.typcn.typcn-heart-outline
+          ' Like
+        .ui.basic.mini.goomp-primary-color.label = likable.likes_count
+
+    - else
+      = button_tag class: 'ui basic goomp-primary-color button mini' do
+        span.typcn.typcn-heart-outline
+        ' Like

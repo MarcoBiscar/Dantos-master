@@ -1,0 +1,28 @@
+- if controller_name == "reviews" || (controller_name == "goomps" && action_name.in?(%w(show)))
+  - if current_user&.is_manager_of? @goomp
+    .goomp-header
+      .add-cover-button
+        = link_to edit_goomp_path(@goomp), class: 'ui button basic blue', data: { "change-cover" => true, "goomp-id" => @goomp.id } do
+          - if @goomp.cover.present?
+            ' Change Cover Image
+          - else
+            ' Add Cover Image
+
+      .cover
+        = image_tag @goomp.cover.present? ? @goomp.cover : "http://placehold.it/1500x320", height: 320
+
+        = render 'layouts/goomp_header_info'
+
+  - else
+    - if @goomp.cover.present?
+      .goomp-header
+        .cover
+          = image_tag @goomp.cover, height: 320
+        = render 'layouts/goomp_header_info'
+
+    - else
+      .goomp-header.no-cover
+        = render 'layouts/goomp_header_info'
+
+
+

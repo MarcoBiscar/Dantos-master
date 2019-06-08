@@ -1,0 +1,19 @@
+.ui.small.modal data-modal-id=modal_id
+  h1.ui.center.aligned.header Sign Up or Login
+  .content
+    .ui.two.column.middle.aligned.very.relaxed.stackable.grid
+      .column
+        = form_for User.new, url: session_path(:user), html: { class: "ui form" } do |f|
+          .field
+            = f.label :email
+            = f.text_field :email
+          .field
+            = f.label :password
+            = f.password_field :password
+          = f.submit "Sign in", class: "ui primary button"
+      .ui.vertical.divider
+        | Or
+      .center.aligned.column
+        = link_to new_user_registration_path, class: "ui big green labeled icon button", data: { turbolinks: false } do
+          i.icon.typcn.typcn-lock-closed-outline
+          | Sign Up

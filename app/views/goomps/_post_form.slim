@@ -1,0 +1,44 @@
+= form_for Post.new, url: action_url, html: { class: "ui form" }, remote: true do |f|
+  - if @post && @post.errors.any?
+    #error_explanation
+      h2 = "#{pluralize(@post.errors.count, "error")} prohibited this post from being saved:"
+      ul
+        - @post.errors.full_messages.each do |message|
+          li = message
+
+  = f.hidden_field :goomp_id
+  = f.hidden_field :link_title
+  = f.hidden_field :link_description
+  = f.hidden_field :link_image
+  = f.hidden_field :link_url
+  = f.hidden_field :link_video
+
+  .ui.compact.secondary.pointing.menu
+    - if assigns["goomp"]
+      = link_to new_goomp_post_path(goomp), class: "item" do
+        i.expand.icon
+        ' Publish Story
+    - else
+      = link_to new_post_path, class: "item" do
+        i.expand.icon
+        ' Publish Story
+
+  .field
+    = f.text_area :body, placeholder: "Ask a question or share a link", rows: 4
+
+  .field
+    - fields_for :link do |ff|
+      = ff.text_field :url, placeholder: "or share a link"
+
+  .field
+    .two.fields
+      .field
+        - if assigns["goomp"]
+          = f.collection_select :subtopic_id, goomp.subtopics, :id, :name, {prompt: "Choose Chapter"}, {class: "ui selection dropdown", "tabindex" => -1}
+        - else
+          = f.collection_select :goomp_id, joined_goomps, :id, :name, {prompt: "Choose Goomp"}, {class: "ui selection dropdown", name: "post[goomp_id]"}
+      .field
+        = f.submit "Publish", class: "ui right floated secondary button"
+
+  div class="ui error message"
+#link-card
